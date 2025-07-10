@@ -1,4 +1,8 @@
-/* src/app/components.css */
+/* src/styles/components.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @layer components {
     .card-hover {
       @apply transition-all duration-200 hover:shadow-lg hover:scale-[1.02];

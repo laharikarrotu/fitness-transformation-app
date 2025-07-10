@@ -18,27 +18,48 @@ import type { ProgressLog } from '@/types/progress';
 type TimeFrame = 'week' | 'month' | 'year';
 
 export default function ProgressChart() {
-  const [progressData, setProgressData] = useState<ProgressLog[]>([]);
+  const [progressData, setProgressData] = useState<any[]>([]);
   const [timeframe, setTimeframe] = useState<TimeFrame>('month');
   const [isLoading, setIsLoading] = useState(true);
-
-  const fetchProgressData = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(`/api/progress?timeframe=${timeframe}`);
-      if (!response.ok) throw new Error('Failed to fetch progress data');
-      const data = await response.json();
-      setProgressData(data);
-    } catch (error) {
-      console.error('Error fetching progress:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [timeframe]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchProgressData();
-  }, [fetchProgressData]);
+    async function fetchMetrics() {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch('/api/progress/metrics');
+        if (!response.ok) throw new Error('Failed to fetch progress data');
+        const data = await response.json();
+        // Filter for weight logs only
+        const weightLogs = data.filter((m: any) => m.category === 'weight');
+        // Sort by date ascending
+        weightLogs.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        // Filter by timeframe
+        const now = new Date();
+        let filtered = weightLogs;
+        if (timeframe === 'week') {
+          const weekAgo = new Date(now);
+          weekAgo.setDate(now.getDate() - 7);
+          filtered = weightLogs.filter((m: any) => new Date(m.date) >= weekAgo);
+        } else if (timeframe === 'month') {
+          const monthAgo = new Date(now);
+          monthAgo.setMonth(now.getMonth() - 1);
+          filtered = weightLogs.filter((m: any) => new Date(m.date) >= monthAgo);
+        } else if (timeframe === 'year') {
+          const yearAgo = new Date(now);
+          yearAgo.setFullYear(now.getFullYear() - 1);
+          filtered = weightLogs.filter((m: any) => new Date(m.date) >= yearAgo);
+        }
+        setProgressData(filtered);
+      } catch (err: any) {
+        setError(err.message || 'Failed to load progress data');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchMetrics();
+  }, [timeframe]);
 
   const timeframes: { label: string; value: TimeFrame }[] = [
     { label: 'Week', value: 'week' },
@@ -47,7 +68,7 @@ export default function ProgressChart() {
   ];
 
   return (
-    <Card>
+    <Card className="animate-fade-in">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle>Weight Progress</CardTitle>
         <div className="flex gap-2">
@@ -57,6 +78,7 @@ export default function ProgressChart() {
               variant={timeframe === value ? "default" : "outline"}
               size="sm"
               onClick={() => setTimeframe(value)}
+              className="transition-transform duration-200 hover:scale-105"
             >
               {label}
             </Button>
@@ -66,9 +88,13 @@ export default function ProgressChart() {
       <CardContent>
         <div className="h-[400px]">
           {isLoading ? (
-            <div className="flex items-center justify-center h-full">
-              Loading...
+            <div className="flex items-center justify-center h-full text-fitness-blue animate-pulse">
+              Loading weight progress...
             </div>
+          ) : error ? (
+            <div className="flex items-center justify-center h-full text-red-500">{error}</div>
+          ) : !progressData.length ? (
+            <div className="flex items-center justify-center h-full text-gray-500">No weight logs found.</div>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={progressData}>
@@ -83,10 +109,11 @@ export default function ProgressChart() {
                 />
                 <Line
                   type="monotone"
-                  dataKey="weight"
+                  dataKey="value"
                   stroke="#8884d8"
                   name="Weight (kg)"
                   dot={{ strokeWidth: 2 }}
+                  isAnimationActive={true}
                 />
               </LineChart>
             </ResponsiveContainer>

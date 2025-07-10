@@ -1,42 +1,74 @@
-// src/app/api/progress/photos/route.ts
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth/config';
+import { NextRequest, NextResponse } from 'next/server';
+import { getSession } from '@auth0/nextjs-auth0';
+import { uploadFile, listFiles, deleteFile } from '@/lib/aws/s3';
+import { isAWSConfigured, BUCKET_NAMES } from '@/lib/aws/config';
 
-export async function POST(request: Request) {
+// GET: List user's progress photos
+export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session) {
+    const session = await getSession();
+    if (!session?.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
-    const formData = await request.formData();
-    const photo = formData.get('photo') as File;
-    const viewType = formData.get('viewType') as 'front' | 'side' | 'back';
-
-    if (!photo || !viewType) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
+    if (!isAWSConfigured()) {
+      return NextResponse.json({ error: 'AWS not configured' }, { status: 500 });
     }
-  // Here you would upload the photo and save metadata
-  const photoUrl = await uploadPhoto(photo, viewType);
-
-  return NextResponse.json({
-    message: 'Photo uploaded successfully',
-    photoUrl
-  });
-} catch (error) {
-  console.error('Error uploading photo:', error);
-  return NextResponse.json(
-    { error: 'Internal server error' },
-    { status: 500 }
-  );
-}
+    const prefix = `${session.user.sub}/`;
+    const files = await listFiles('PROGRESS_PHOTOS', prefix);
+    return NextResponse.json({ files });
+  } catch (error) {
+    console.error('Error listing progress photos:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
 }
 
-// Mock function - replace with actual cloud storage upload
-async function uploadPhoto(photo: File, viewType: string): Promise<string> {
-return `/uploads/${viewType}/${photo.name}`;
+// POST: Upload a new progress photo
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!isAWSConfigured()) {
+      return NextResponse.json({ error: 'AWS not configured' }, { status: 500 });
+    }
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    if (!file) {
+      return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+    }
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const key = `${session.user.sub}/${Date.now()}_${file.name}`;
+    const url = await uploadFile('PROGRESS_PHOTOS', key, buffer, file.type);
+    return NextResponse.json({ url });
+  } catch (error) {
+    console.error('Error uploading progress photo:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
 }
+
+// DELETE: Remove a progress photo
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    if (!isAWSConfigured()) {
+      return NextResponse.json({ error: 'AWS not configured' }, { status: 500 });
+    }
+    const { key } = await request.json();
+    if (!key || !key.startsWith(session.user.sub)) {
+      return NextResponse.json({ error: 'Invalid key' }, { status: 400 });
+    }
+    const success = await deleteFile('PROGRESS_PHOTOS', key);
+    if (!success) {
+      return NextResponse.json({ error: 'Failed to delete file' }, { status: 500 });
+    }
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting progress photo:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+} 

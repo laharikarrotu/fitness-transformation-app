@@ -1,5 +1,10 @@
+"use client";
+import { useAuth0 } from '@/hooks/useAuth0';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { LoadingSpinner } from '@/components/ui/loading-spinner';
 // src/app/activities/page.tsx
-import { PageHeader } from '@/components/layout/PageHeader';
+import { PageHeader } from '@/components/ui/page-header';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import ActivityCalendar from '@/components/activities/ActivityCalender';
@@ -7,6 +12,17 @@ import ActivityList from '@/components/activities/ActivityList';
 import { Container } from '@/components/layout/Container';
 
 export default function ActivitiesPage() {
+  const { user, isLoading } = useAuth0();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push('/api/auth/login');
+    }
+  }, [isLoading, user, router]);
+
+  if (isLoading || !user) return <LoadingSpinner />;
+
   return (
     <>
       <PageHeader title="Activities">

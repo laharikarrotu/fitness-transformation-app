@@ -2,7 +2,16 @@
 'use client';
 
 import { UserProvider } from '@auth0/nextjs-auth0/client';
+import { ReactNode } from 'react';
 
-export function Auth0Provider({ children }: { children: React.ReactNode }) {
-  return <UserProvider>{children}</UserProvider>;
+interface Auth0ProviderProps {
+  children: ReactNode;
+}
+
+export function Auth0Provider({ children }: Auth0ProviderProps) {
+  return (
+    <UserProvider>
+      {children}
+    </UserProvider>
+  );
 }

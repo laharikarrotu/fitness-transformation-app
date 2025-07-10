@@ -23,14 +23,9 @@ module.exports = {
           ring: "hsl(var(--ring))",
           background: "hsl(var(--background))",
           foreground: "hsl(var(--foreground))",
-          primary: {
-            DEFAULT: "hsl(var(--primary))",
-            foreground: "hsl(var(--primary-foreground))",
-          },
-          secondary: {
-            DEFAULT: "hsl(var(--secondary))",
-            foreground: "hsl(var(--secondary-foreground))",
-          },
+          primary: '#22c55e', // use energetic green as primary
+          secondary: '#2563eb', // blue as secondary
+          accent: '#f97316', // orange as accent
           destructive: {
             DEFAULT: "hsl(var(--destructive))",
             foreground: "hsl(var(--destructive-foreground))",
@@ -38,10 +33,6 @@ module.exports = {
           muted: {
             DEFAULT: "hsl(var(--muted))",
             foreground: "hsl(var(--muted-foreground))",
-          },
-          accent: {
-            DEFAULT: "hsl(var(--accent))",
-            foreground: "hsl(var(--accent-foreground))",
           },
           popover: {
             DEFAULT: "hsl(var(--popover))",
@@ -51,6 +42,21 @@ module.exports = {
             DEFAULT: "hsl(var(--card))",
             foreground: "hsl(var(--card-foreground))",
           },
+          fitness: {
+            green: '#22c55e', // energetic green
+            blue: '#2563eb',  // vibrant blue
+            orange: '#f97316', // energetic orange
+            dark: '#101820',   // deep background
+            light: '#f8fafc',  // clean white
+            accent: '#38bdf8', // accent blue
+          },
+        },
+        backgroundImage: {
+          'fitness-gradient': 'linear-gradient(135deg, #22c55e 0%, #2563eb 100%)',
+          'fitness-radial': 'radial-gradient(circle at 20% 20%, #22c55e 0%, #2563eb 100%)',
+        },
+        boxShadow: {
+          fitness: '0 4px 24px 0 rgba(34,197,94,0.15), 0 1.5px 6px 0 rgba(37,99,235,0.10)',
         },
         borderRadius: {
           lg: "var(--radius)",

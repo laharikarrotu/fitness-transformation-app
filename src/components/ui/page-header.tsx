@@ -8,9 +8,10 @@ interface PageHeaderProps {
     label: string;
     onClick: () => void;
   };
+  children?: any;
 }
 
-export function PageHeader({ title, description, action }: PageHeaderProps) {
+export function PageHeader({ title, description, action, children }: PageHeaderProps) {
   return (
     <div className="flex justify-between items-start mb-6">
       <div>
@@ -22,6 +23,7 @@ export function PageHeader({ title, description, action }: PageHeaderProps) {
       {action && (
         <Button onClick={action.onClick}>{action.label}</Button>
       )}
+      {children}
     </div>
   );
 }

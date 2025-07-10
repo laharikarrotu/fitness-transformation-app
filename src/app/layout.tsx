@@ -1,10 +1,10 @@
-import './globals.css'
-import './components.css'
+import '@/styles/globals.css'
+import '@/styles/components.css'
 import { ThemeProvider } from '@/components/providers/ThemeProvider';
+import { Auth0Provider } from '@/components/providers/auth0-provider';
 import { Inter } from 'next/font/google'
-import { Sidebar } from '@/components/layout/Sidebar'
-import { Header } from '@/components/layout/Header'
-import VoiceAssistant from '@/components/voice/VoiceAssistant'
+import React from 'react'
+import AppShell from '@/components/layout/AppShell';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -14,26 +14,19 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-   
-      <html lang="en">
-        <body className={inter.className}>
-        <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-          <div className="min-h-screen bg-background">
-            <Sidebar />
-            <Header />
-            <main className="pl-16 pt-16 min-h-screen">
-              {children}
-            </main>
-            <VoiceAssistant />
-          </div>
+    <html lang="en">
+      <body className={inter.className + ' bg-fitness-gradient min-h-screen'}>
+        <Auth0Provider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <AppShell>{children}</AppShell>
           </ThemeProvider>
-        </body>
-      </html>
-    
+        </Auth0Provider>
+      </body>
+    </html>
   );
 }

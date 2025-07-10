@@ -12,8 +12,8 @@ import {
   User,
   Settings,
   BarChart2,
+  Users,
 } from 'lucide-react';
-
 
 const navigationItems = [
   { href: '/dashboard', icon: Home, label: 'Dashboard' },
@@ -21,6 +21,7 @@ const navigationItems = [
   { href: '/nutrition', icon: Utensils, label: 'Nutrition' },
   { href: '/progress', icon: BarChart2, label: 'Progress' },
   { href: '/activities', icon: Activity, label: 'Activities' },
+  { href: '/trainers', icon: Users, label: 'Trainers' },
 ];
 
 const userItems = [
@@ -32,53 +33,48 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed left-0 top-0 w-16 h-full border-r bg-background flex flex-col py-6">
-      <div className="flex flex-col flex-1 gap-6">
-        <div className="px-2">
-          <Link href="/dashboard">
-            <div className="w-12 h-12 flex items-center justify-center bg-primary/10 text-primary rounded-lg">
-              <Dumbbell className="w-6 h-6" />
-            </div>
-          </Link>
+    <div className="fixed left-0 top-0 w-20 h-full border-r bg-fitness-dark flex flex-col py-6 shadow-fitness z-30">
+      <div className="flex flex-col flex-1 gap-6 items-center">
+        {/* Fitness Logo/Icon */}
+        <div className="mb-4">
+          <div className="w-14 h-14 flex items-center justify-center bg-fitness-green/90 text-white rounded-2xl shadow-fitness">
+            <Dumbbell className="w-8 h-8" />
+          </div>
         </div>
-
-        <nav className="flex-1 flex flex-col gap-2 px-2">
+        <nav className="flex-1 flex flex-col gap-2 items-center">
           {navigationItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
-
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "w-12 h-12 flex items-center justify-center rounded-lg transition-colors hover:bg-muted",
-                  isActive && "bg-primary/10 text-primary"
+                  "w-14 h-14 flex items-center justify-center rounded-2xl transition-colors hover:bg-fitness-green/20 hover:text-fitness-green text-white",
+                  isActive && "bg-fitness-green/90 text-white shadow-fitness"
                 )}
                 title={item.label}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-6 h-6" />
               </Link>
             );
           })}
         </nav>
-
-        <div className="px-2 flex flex-col gap-2">
+        <div className="flex flex-col gap-2 items-center mt-4">
           {userItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
-
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "w-12 h-12 flex items-center justify-center rounded-lg transition-colors hover:bg-muted",
-                  isActive && "bg-primary/10 text-primary"
+                  "w-14 h-14 flex items-center justify-center rounded-2xl transition-colors hover:bg-fitness-accent/20 hover:text-fitness-accent text-white",
+                  isActive && "bg-fitness-accent/90 text-white shadow-fitness"
                 )}
                 title={item.label}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-6 h-6" />
               </Link>
             );
           })}

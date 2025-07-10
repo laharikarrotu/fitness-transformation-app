@@ -80,12 +80,10 @@ const nextConfig: NextConfig = {
     return config
   },
 
-  // Output configuration
-  output: 'standalone',
+  // Output configuration - only use standalone in production
+  ...(process.env.NODE_ENV === 'production' && { output: 'standalone' }),
   // Disable React strict mode
   reactStrictMode: false,
-  // Enable SWC minification
-  swcMinify: true,
   // Configure compiler options
   compiler: {
     // Remove console.log in production
@@ -93,8 +91,6 @@ const nextConfig: NextConfig = {
   },
   // Configure powered by header
   poweredByHeader: false,
-  // Configure optimizations
-  optimizeFonts: true,
   // Configure internationalization
   i18n: {
     locales: ['en'],

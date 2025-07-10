@@ -2,7 +2,7 @@
 import { withMiddlewareAuthRequired } from '@auth0/nextjs-auth0/edge';
 
 export default withMiddlewareAuthRequired({
-  returnTo: '/login',
+  returnTo: '/auth/login',
 });
 
 export const config = {

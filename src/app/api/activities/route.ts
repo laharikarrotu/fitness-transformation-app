@@ -1,42 +1,33 @@
-// src/app/api/activities/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import { getSession } from '@auth0/nextjs-auth0';
+import { getUserActivities, addUserActivity } from '@/lib/aws/activities';
 
-export async function GET() {
-  // Mock activities data
-  const activities = [
-    {
-      id: '1',
-      type: 'workout',
-      title: 'Upper Body Strength',
-      duration: 45,
-      caloriesBurned: 320,
-      date: new Date().toISOString(),
-    },
-    {
-      id: '2',
-      type: 'run',
-      title: 'Morning Run',
-      duration: 30,
-      caloriesBurned: 280,
-      date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // Yesterday
-    },
-    {
-      id: '3',
-      type: 'swim',
-      title: 'Pool Laps',
-      duration: 40,
-      caloriesBurned: 400,
-      date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-    },
-    {
-      id: '4',
-      type: 'bike',
-      title: 'Evening Ride',
-      duration: 60,
-      caloriesBurned: 450,
-      date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-    },
-  ];
-
-  return NextResponse.json(activities);
+export async function GET(request: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const activities = await getUserActivities(session.user.sub);
+    return NextResponse.json(activities);
+  } catch (error) {
+    console.error('Error fetching activities:', error);
+    return NextResponse.json({ error: 'Failed to fetch activities' }, { status: 500 });
+  }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getSession();
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const body = await request.json();
+    const newActivity = { ...body, userId: session.user.sub, id: Date.now().toString(), date: new Date().toISOString().split('T')[0] };
+    await addUserActivity(session.user.sub, newActivity);
+    return NextResponse.json(newActivity);
+  } catch (error) {
+    console.error('Error logging activity:', error);
+    return NextResponse.json({ error: 'Failed to log activity' }, { status: 500 });
+  }
+} 
