@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Bell, Search, LogOut, User, Settings, Dumbbell, Home, Utensils, Activity, BarChart2, Users } from 'lucide-react';
+import { Bell, Search, LogOut, User, Settings, Dumbbell, Home, Utensils, Activity, BarChart2, Users, List } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
@@ -15,12 +15,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import Image from 'next/image';
-import { useAuth0 } from '@/hooks/useAuth0';
 import Link from 'next/link';
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: Home },
   { href: '/workouts', label: 'Workouts', icon: Dumbbell },
+  { href: '/exercises', label: 'Exercises', icon: List },
   { href: '/nutrition', label: 'Nutrition', icon: Utensils },
   { href: '/progress', label: 'Progress', icon: BarChart2 },
   { href: '/activities', label: 'Activities', icon: Activity },
@@ -28,7 +28,6 @@ const navLinks = [
 ];
 
 export function Header() {
-  const { user } = useAuth0();
   const [notifications] = useState([
     { id: 1, title: 'Workout Reminder', message: 'Time for your daily workout!' },
     { id: 2, title: 'Goal Achieved', message: 'You reached your weekly goal!' },
@@ -99,65 +98,11 @@ export function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
           <ThemeToggle />
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="relative h-8 w-8 rounded-full"
-                >
-                  {user?.avatar ? (
-                    <Image
-                      src={user.avatar}
-                      alt="Profile"
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <Image
-                      src="/placeholder-avatar.svg"
-                      alt="Profile"
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                  )}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>
-                  {user?.name || 'My Account'}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile">
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <a href="/api/auth/logout">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Log out
-                  </a>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <Link href="/api/auth/login">
-              <Button variant="outline" className="ml-2">
-                Login
-              </Button>
-            </Link>
-          )}
+          <Link href="/api/auth/login" className="ml-2">
+            <Button variant="outline">
+              Login
+            </Button>
+          </Link>
         </div>
       </div>
       {/* Mobile nav links */}

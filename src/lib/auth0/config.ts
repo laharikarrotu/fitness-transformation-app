@@ -1,5 +1,3 @@
-import { getSession, getAccessToken, withApiAuthRequired, withPageAuthRequired } from '@auth0/nextjs-auth0';
-
 export const authConfig = {
   auth0: {
     secret: process.env.AUTH0_SECRET,

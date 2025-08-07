@@ -1,35 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@auth0/nextjs-auth0';
-import { 
-  createWorkoutPlan, 
-  getUserWorkoutPlans, 
-  createWorkoutSession,
-  getUserWorkoutSessions 
-} from '@/lib/aws/workouts';
+import { createWorkoutPlan, getUserWorkoutPlans, createWorkoutSession, getUserWorkoutSessions } from '@/lib/aws/workouts';
 import { isAWSConfigured } from '@/lib/aws/config';
 
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
-    
     if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
     if (!isAWSConfigured()) {
       return NextResponse.json(
         { error: 'AWS not configured' },
         { status: 500 }
       );
     }
-
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type'); // 'plans' or 'sessions'
     const limit = parseInt(searchParams.get('limit') || '10');
-
     if (type === 'sessions') {
       const sessions = await getUserWorkoutSessions(session.user.sub, limit);
       return NextResponse.json(sessions);

@@ -69,10 +69,13 @@
  
 @layer base {
   * {
-    @apply border-border;
+    @apply border-fitness-border dark:border-fitness-border-dark;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-fitness-bg text-fitness-dark;
+  }
+  .dark body {
+    @apply bg-fitness-bg-dark text-fitness-light;
   }
 }
 
@@ -178,4 +181,40 @@
 }
 .animate-fade-in-up {
   animation: fade-in-up 1s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.section-bg {
+  @apply bg-fitness-card dark:bg-fitness-card-dark;
+}
+
+.section-header {
+  @apply text-fitness-green font-extrabold text-3xl md:text-4xl;
+}
+
+.section-subheader {
+  @apply text-fitness-blue font-semibold text-xl md:text-2xl;
+}
+
+.card {
+  @apply bg-fitness-card dark:bg-fitness-card-dark shadow-fitness rounded-xl;
+}
+
+.card-title {
+  @apply text-fitness-green font-bold text-xl;
+}
+
+.card-content {
+  @apply text-fitness-dark dark:text-fitness-light;
+}
+
+.btn-primary {
+  @apply bg-fitness-green text-white hover:bg-fitness-blue font-bold shadow-fitness;
+}
+
+.btn-accent {
+  @apply bg-fitness-accent text-white hover:bg-fitness-orange font-bold;
+}
+
+input, textarea, select {
+  @apply bg-white dark:bg-fitness-dark text-fitness-dark dark:text-fitness-light border-fitness-border dark:border-fitness-border-dark;
 }

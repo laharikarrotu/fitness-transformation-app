@@ -61,6 +61,7 @@ interface Availability {
 
 export default function TrainerProfile() {
   const { user } = useAuth0();
+  const userId = user?.sub;
   const [profile, setProfile] = useState<TrainerProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [newCertification, setNewCertification] = useState({
@@ -78,7 +79,7 @@ export default function TrainerProfile() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/trainers/profile?userId=${user?.id}`);
+        const res = await fetch(`/api/trainers/profile?userId=${userId}`);
         if (!res.ok) throw new Error('Failed to fetch profile');
         const data = await res.json();
         setProfile(data);
@@ -88,8 +89,8 @@ export default function TrainerProfile() {
         setLoading(false);
       }
     }
-    if (user?.id) fetchProfile();
-  }, [user?.id]);
+    if (userId) fetchProfile();
+  }, [userId]);
 
   const updateProfile = (updates: Partial<TrainerProfile>) => {
     setProfile((prev) => prev ? { ...prev, ...updates } : prev);
@@ -128,7 +129,7 @@ export default function TrainerProfile() {
       const response = await fetch('/api/trainers/profile', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...profile, userId: user?.id })
+        body: JSON.stringify({ ...profile, userId: userId })
       });
       if (!response.ok) throw new Error('Failed to update profile');
       setIsEditing(false);

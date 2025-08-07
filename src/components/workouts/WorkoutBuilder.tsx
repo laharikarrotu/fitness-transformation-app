@@ -8,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Trash2, Save, Play } from 'lucide-react';
-import { useAuth0 } from '@/hooks/useAuth0';
 import { Exercise } from '@/types/exercise';
 
 interface WorkoutExercise {
@@ -21,7 +20,6 @@ interface WorkoutExercise {
 }
 
 export default function WorkoutBuilder() {
-  const { user } = useAuth0();
   const [workoutName, setWorkoutName] = useState('');
   const [workoutDescription, setWorkoutDescription] = useState('');
   const [difficulty, setDifficulty] = useState<'beginner' | 'intermediate' | 'advanced'>('beginner');
@@ -102,7 +100,7 @@ export default function WorkoutBuilder() {
   };
 
   const saveWorkout = async () => {
-    if (!user || !workoutName.trim()) return;
+    if (!workoutName.trim()) return;
 
     setIsSaving(true);
     try {

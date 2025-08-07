@@ -10,20 +10,8 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from '@/hooks/useToast';
-import { useAuth0 } from '@/hooks/useAuth0';
-import { useRouter } from 'next/navigation';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export default function ProfilePage() {
-  const { user, isLoading } = useAuth0();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router.push('/api/auth/login');
-    }
-  }, [isLoading, user, router]);
-
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -81,7 +69,6 @@ export default function ProfilePage() {
     }
   };
 
-  if (isLoading || !user) return <LoadingSpinner />;
   if (loading) return <div className="p-8 text-center text-lg text-fitness-blue animate-pulse">Loading profile...</div>;
   if (error) return <div className="p-8 text-center text-lg text-red-500">{error}</div>;
   if (!profile) return null;

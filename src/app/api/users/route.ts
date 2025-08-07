@@ -6,30 +6,22 @@ import { isAWSConfigured } from '@/lib/aws/config';
 export async function GET(request: NextRequest) {
   try {
     const session = await getSession();
-    
     if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
     if (!isAWSConfigured()) {
       return NextResponse.json(
         { error: 'AWS not configured' },
         { status: 500 }
       );
     }
-
     const user = await getUserByAuth0Id(session.user.sub);
-    
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
       );
     }
-
     return NextResponse.json(user);
   } catch (error) {
     console.error('Error getting user:', error);
@@ -43,25 +35,17 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
-    
     if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
     if (!isAWSConfigured()) {
       return NextResponse.json(
         { error: 'AWS not configured' },
         { status: 500 }
       );
     }
-
     const body = await request.json();
     const { preferences } = body;
-
-    // Create or update user in DynamoDB
     const user = await createOrUpdateUser(
       {
         id: session.user.sub,
@@ -80,15 +64,9 @@ export async function POST(request: NextRequest) {
       },
       session.user.sub
     );
-
-    // Update preferences if provided
-    if (preferences) {
-      await updateUserPreferences(user.id, preferences);
-    }
-
     return NextResponse.json(user);
   } catch (error) {
-    console.error('Error creating user:', error);
+    console.error('Error creating/updating user:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -99,45 +77,28 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const session = await getSession();
-    
     if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
     if (!isAWSConfigured()) {
       return NextResponse.json(
         { error: 'AWS not configured' },
         { status: 500 }
       );
     }
-
     const body = await request.json();
     const { preferences } = body;
-
     const user = await getUserByAuth0Id(session.user.sub);
-    
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
       );
     }
-
-    const updatedUser = await updateUserPreferences(user.id, preferences);
-    
-    if (!updatedUser) {
-      return NextResponse.json(
-        { error: 'Failed to update user' },
-        { status: 500 }
-      );
-    }
-
+    const updatedUser = await updateUserPreferences(session.user.sub, preferences);
     return NextResponse.json(updatedUser);
   } catch (error) {
-    console.error('Error updating user:', error);
+    console.error('Error updating user preferences:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

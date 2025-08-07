@@ -1,7 +1,7 @@
-const AWS = require('aws-sdk');
+const { DynamoDBClient, PutItemCommand } = require('@aws-sdk/client-dynamodb');
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-AWS.config.update({ region: 'us-east-1' }); // Change if your region is different
-const dynamodb = new AWS.DynamoDB.DocumentClient();
+const client = new DynamoDBClient({ region: 'us-east-1' });
 const TABLE_NAME = 'Exercises';
 
 async function fetchExercises() {
@@ -20,20 +20,18 @@ async function seedDynamoDB(exercises) {
   for (const exercise of exercises) {
     // Only add exercises with a name and description
     if (!exercise.name || !exercise.description) continue;
-    const params = {
-      TableName: TABLE_NAME,
-      Item: {
-        id: exercise.id,
-        name: exercise.name,
-        description: exercise.description,
-        category: exercise.category,
-        equipment: exercise.equipment,
-        muscles: exercise.muscles,
-        muscles_secondary: exercise.muscles_secondary,
-      }
+    const item = {
+      id: { N: String(exercise.id) },
+      name: { S: exercise.name },
+      description: { S: exercise.description },
+      category: { S: String(exercise.category) },
+      muscles: { S: JSON.stringify(exercise.muscles) },
+      muscles_secondary: { S: JSON.stringify(exercise.muscles_secondary) },
+      equipment: { S: JSON.stringify(exercise.equipment) },
     };
+    const command = new PutItemCommand({ TableName: TABLE_NAME, Item: item });
     try {
-      await dynamodb.put(params).promise();
+      await client.send(command);
       console.log(`Seeded: ${exercise.name}`);
     } catch (err) {
       console.error(`Failed to seed ${exercise.name}:`, err);
@@ -46,4 +44,4 @@ async function seedDynamoDB(exercises) {
   console.log(`Fetched ${exercises.length} exercises.`);
   await seedDynamoDB(exercises);
   console.log('Seeding complete!');
-})();
+})(); 

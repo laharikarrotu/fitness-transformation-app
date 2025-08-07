@@ -18,7 +18,6 @@ import {
   Calendar,
   Clock
 } from 'lucide-react';
-import { useAuth0 } from '@/hooks/useAuth0';
 
 interface FoodItem {
   id: string;
@@ -122,7 +121,6 @@ const DEFAULT_GOALS: NutritionGoals = {
 };
 
 export default function NutritionTracker() {
-  const { user } = useAuth0();
   const [goals, setGoals] = useState<NutritionGoals>(DEFAULT_GOALS);
   const [todayLog, setTodayLog] = useState<MealLog[]>([]);
   const [searchQuery, setSearchQuery] = useState('');

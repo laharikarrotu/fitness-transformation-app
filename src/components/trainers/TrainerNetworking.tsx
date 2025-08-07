@@ -23,7 +23,6 @@ import {
   Bookmark,
   ExternalLink
 } from 'lucide-react';
-import { useAuth0 } from '@/hooks/useAuth0';
 
 interface Trainer {
   id: string;
@@ -72,7 +71,6 @@ interface Resource {
 }
 
 export default function TrainerNetworking() {
-  const { user } = useAuth0();
   const [network, setNetwork] = useState<Trainer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +87,7 @@ export default function TrainerNetworking() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/trainers/network?trainerId=${user?.id}`);
+        const res = await fetch(`/api/trainers/network?trainerId=${userId}`);
         if (!res.ok) throw new Error('Failed to fetch network');
         const data = await res.json();
         setNetwork(data);
@@ -99,8 +97,8 @@ export default function TrainerNetworking() {
         setLoading(false);
       }
     }
-    if (user?.id) fetchNetwork();
-  }, [user?.id]);
+    if (userId) fetchNetwork();
+  }, [userId]);
 
   const connectTrainer = async (targetTrainerId: string) => {
     setSaving(true);
@@ -109,7 +107,7 @@ export default function TrainerNetworking() {
       const response = await fetch(`/api/trainers/network`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ trainerId: user?.id, targetTrainerId })
+        body: JSON.stringify({ trainerId: userId, targetTrainerId })
       });
       if (!response.ok) throw new Error('Failed to connect with trainer');
       setNetwork((prev) => prev.map(t => t.id === targetTrainerId ? { ...t, isConnected: true } : t));
@@ -142,8 +140,8 @@ export default function TrainerNetworking() {
 
     const post: Post = {
       id: Date.now().toString(),
-      trainerId: user?.id || '',
-      trainerName: user?.name || 'You',
+      trainerId: userId || '',
+      trainerName: userId || 'You',
       content: newPost,
       likes: 0,
       comments: 0,

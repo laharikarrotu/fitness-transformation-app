@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Mic, MicOff, Loader2 } from 'lucide-react';
-import { generateResponse } from '@/lib/gemini';
+import { generateResponse } from '@/gemini';
 
 interface SpeechRecognitionEvent extends Event {
   resultIndex: number;

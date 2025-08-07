@@ -1,7 +1,6 @@
 // src/components/profile/UserProfile.tsx
 'use client';
 
-import { useUser } from '@auth0/nextjs-auth0/client';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
