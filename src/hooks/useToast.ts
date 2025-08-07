@@ -59,7 +59,24 @@ let globalToast: ReturnType<typeof useToast> | null = null;
 
 export function getGlobalToast() {
   if (!globalToast) {
-    globalToast = useToast();
+    // Create a simple toast instance without hooks
+    const toastInstance = {
+      toasts: [],
+      toast: (options: ToastOptions) => {
+        const id = Math.random().toString(36).substr(2, 9);
+        const newToast: Toast = {
+          id,
+          title: options.title,
+          description: options.description,
+          variant: options.variant || 'default',
+          duration: options.duration || 5000,
+        };
+        return id;
+      },
+      dismiss: (id: string) => {},
+      dismissAll: () => {},
+    };
+    globalToast = toastInstance as ReturnType<typeof useToast>;
   }
   return globalToast;
 }

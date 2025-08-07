@@ -1,7 +1,6 @@
 "use client";
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -19,8 +18,25 @@ import {
 import { useEffect, useState } from 'react';
 import { toast } from '@/hooks/useToast';
 
+interface Profile {
+  preferences?: {
+    workoutReminders?: boolean;
+    weeklyWorkoutReminders?: boolean;
+    mealReminders?: boolean;
+    waterReminders?: boolean;
+    progressReminders?: boolean;
+    goalReminders?: boolean;
+    profileVisibility?: string;
+    shareProgress?: boolean;
+    shareWorkouts?: boolean;
+    theme?: string;
+    weightUnit?: string;
+    heightUnit?: string;
+  };
+}
+
 export default function SettingsPage() {
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -48,7 +64,7 @@ export default function SettingsPage() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          preferences: profile.preferences,
+          preferences: profile?.preferences || {},
         }),
       });
       if (!res.ok) throw new Error('Failed to save settings');
@@ -60,8 +76,11 @@ export default function SettingsPage() {
     }
   };
 
-  const handleChange = (field: string, value: any) => {
-    setProfile((prev: any) => ({ ...prev, preferences: { ...prev.preferences, [field]: value } }));
+  const handleChange = (field: string, value: unknown) => {
+    setProfile((prev: Profile | null) => {
+      if (!prev) return prev;
+      return { ...prev, preferences: { ...prev.preferences, [field]: value } };
+    });
   };
 
   if (loading) return <div className="p-8 text-center text-lg text-fitness-blue animate-pulse">Loading settings...</div>;

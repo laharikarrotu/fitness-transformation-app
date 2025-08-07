@@ -34,11 +34,11 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <a href="/api/auth/login">
+            <Link href="/api/auth/login">
               <Button size="sm" className="btn-primary animate-bounce">
                 Login
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </nav>
