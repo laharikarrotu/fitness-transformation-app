@@ -80,8 +80,8 @@ const nextConfig: NextConfig = {
     return config
   },
 
-  // Output configuration - only use standalone in production
-  ...(process.env.NODE_ENV === 'production' && { output: 'standalone' }),
+  // Output configuration - disabled standalone to avoid Windows symlink issues
+  // ...(process.env.NODE_ENV === 'production' && { output: 'standalone' }),
   // Disable React strict mode
   reactStrictMode: false,
   // Configure compiler options
