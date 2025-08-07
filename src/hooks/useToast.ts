@@ -64,6 +64,7 @@ export function getGlobalToast() {
       toasts: [],
       toast: (options: ToastOptions) => {
         const id = Math.random().toString(36).substr(2, 9);
+        // Create toast object for reference
         const newToast: Toast = {
           id,
           title: options.title,
@@ -71,10 +72,16 @@ export function getGlobalToast() {
           variant: options.variant || 'default',
           duration: options.duration || 5000,
         };
+        // Store toast in global instance
+        toastInstance.toasts.push(newToast);
         return id;
       },
-      dismiss: (id: string) => {},
-      dismissAll: () => {},
+      dismiss: (id: string) => {
+        toastInstance.toasts = toastInstance.toasts.filter(t => t.id !== id);
+      },
+      dismissAll: () => {
+        toastInstance.toasts = [];
+      },
     };
     globalToast = toastInstance as ReturnType<typeof useToast>;
   }
