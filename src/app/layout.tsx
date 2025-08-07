@@ -15,10 +15,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await getSession();
-  if (!session?.user) {
-    redirect('/api/auth/login');
-  }
   return (
     <html lang="en">
       <body className={inter.className + ' bg-fitness-gradient min-h-screen'}>
@@ -29,7 +25,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <AppShell>{children}</AppShell>
+            {children}
           </ThemeProvider>
         </UserProvider>
       </body>
