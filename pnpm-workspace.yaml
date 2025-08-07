@@ -1,0 +1,6 @@
+onlyBuiltDependencies:
+  - aws-sdk
+  - msw
+  - protobufjs
+  - sharp
+  - unrs-resolver
